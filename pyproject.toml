@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pi-web-api"
+version = "0.1.0"
+description = "Python SDK for the OSIsoft PI Web API"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "PI Web API SDK Maintainers" }
+]
+dependencies = [
+    "requests>=2.31,<3"
+]
+keywords = ["osi", "pi", "web", "api", "sdk"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: Other/Proprietary License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+[project.urls]
+Homepage = "https://example.com/pi-web-api"
+Repository = "https://example.com/pi-web-api/source"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pi_web_api*"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra"
+testpaths = ["tests"]
