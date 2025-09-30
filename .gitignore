@@ -27,9 +27,11 @@ ENV/
 
 # Testing
 .coverage
+.pypi
 coverage.xml
 htmlcov/
 .pytest_cache/
+scripts/
 
 # IDEs and editors
 .vscode/
@@ -48,4 +50,4 @@ Thumbs.db
 *.log
 
 # files
-pi_web_api_reference_8-6-2025_markitdown.md
+pi_web_sdk_reference_8-6-2025_markitdown.md

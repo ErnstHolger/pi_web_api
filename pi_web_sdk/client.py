@@ -160,7 +160,16 @@ class PIWebAPIClient:
         self, endpoint: str, data: Optional[Dict] = None, params: Optional[Dict] = None
     ) -> Dict:
         """Make POST request."""
-        return self._make_request("POST", endpoint, params=params, json_data=data)
+        # Add X-Requested-With header for POST requests
+        original_headers = self.session.headers.copy()
+        self.session.headers.update({"X-Requested-With": "XMLHttpRequest"})
+        
+        try:
+            result = self._make_request("POST", endpoint, params=params, json_data=data)
+            return result
+        finally:
+            # Restore original headers
+            self.session.headers = original_headers
 
     def put(
         self, endpoint: str, data: Optional[Dict] = None, params: Optional[Dict] = None

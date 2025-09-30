@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from pi_web_api.controllers.event import EventFrameController
+from pi_web_sdk.controllers.event import EventFrameController
 
 
 @pytest.fixture

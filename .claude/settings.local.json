@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(\"C:\\Program Files\\Python313\\python.exe\" --version)",
+      "Bash(\"C:\\Program Files\\Python313\\python.exe\" -m pip install -r requirements.txt)",
+      "Bash(\"C:\\Program Files\\Python313\\python.exe\" -m pytest -p vscode_pytest --collect-only tests --rootdir=.)",
+      "Bash(\"C:\\Program Files\\Python313\\python.exe\" -m pytest --collect-only tests)",
+      "mcp__sequential-thinking__sequentialthinking"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

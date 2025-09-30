@@ -1,2 +1,2 @@
 include README.md
-recursive-include pi_web_api *.py
+recursive-include pi_web_sdk *.py

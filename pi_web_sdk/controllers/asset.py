@@ -7,12 +7,13 @@ from typing import Dict, Optional
 from .base import BaseController
 
 __all__ = [
-    'AssetServerController',
-    'AssetDatabaseController',
-    'ElementController',
-    'ElementCategoryController',
-    'ElementTemplateController',
+    "AssetServerController",
+    "AssetDatabaseController",
+    "ElementController",
+    "ElementCategoryController",
+    "ElementTemplateController",
 ]
+
 
 class AssetServerController(BaseController):
     """Controller for Asset Server operations."""
@@ -56,6 +57,15 @@ class AssetServerController(BaseController):
 
 class AssetDatabaseController(BaseController):
     """Controller for Asset Database operations."""
+
+    def get_default_server(self) -> Dict:
+        asset_server = self.client.asset_server.list()
+        return asset_server["Items"][0]
+
+    def get_default_database(self) -> Dict:
+        asset_server = self.get_default_server()
+        asset_database = self.client.asset_server.get_databases(asset_server["WebId"])
+        return asset_database["Items"][1]
 
     def get(self, web_id: str, selected_fields: Optional[str] = None) -> Dict:
         """Get asset database by WebID."""
@@ -139,7 +149,7 @@ class ElementController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"elements/path/{self._encode_path(path)}", params=params
+            f"elements?path={path}".replace(" ", "%20"), params=params
         )
 
     def update(self, web_id: str, element: Dict) -> Dict:
