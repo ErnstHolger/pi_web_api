@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, Optional
 
 from .base import BaseController
 
@@ -47,4 +47,18 @@ class SystemController(BaseController):
 class ConfigurationController(BaseController):
     """Controller for Configuration operations."""
 
-    pass
+    def list(self) -> Dict:
+        """List all configurations."""
+        return self.client.get("configuration")
+
+    def get(self, item_id: str) -> Dict:
+        """Get configuration item by ID."""
+        return self.client.get(f"configuration/{item_id}")
+
+    def update(self, item_id: str, config: Dict) -> Dict:
+        """Update a configuration item."""
+        return self.client.put(f"configuration/{item_id}", data=config)
+
+    def delete(self, item_id: str) -> Dict:
+        """Delete a configuration item."""
+        return self.client.delete(f"configuration/{item_id}")

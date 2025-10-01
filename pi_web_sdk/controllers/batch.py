@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from .base import BaseController
 
@@ -79,10 +79,38 @@ class BatchController(BaseController):
 class CalculationController(BaseController):
     """Controller for Calculation operations."""
 
-    pass
+    def get(self, web_id: str) -> Dict:
+        """Get calculation by WebID."""
+        return self.client.get(f"calculations/{web_id}")
+
+    def get_by_path(self, path: str) -> Dict:
+        """Get calculation by path."""
+        return self.client.get(f"calculations?path={self._encode_path(path)}")
+
+    def update(self, web_id: str, calculation: Dict) -> Dict:
+        """Update a calculation."""
+        return self.client.patch(f"calculations/{web_id}", data=calculation)
+
+    def delete(self, web_id: str) -> Dict:
+        """Delete a calculation."""
+        return self.client.delete(f"calculations/{web_id}")
 
 
 class ChannelController(BaseController):
     """Controller for Channel operations."""
 
-    pass
+    def get(self, web_id: str) -> Dict:
+        """Get channel by WebID."""
+        return self.client.get(f"channels/{web_id}")
+
+    def get_by_path(self, path: str) -> Dict:
+        """Get channel by path."""
+        return self.client.get(f"channels?path={self._encode_path(path)}")
+
+    def update(self, web_id: str, channel: Dict) -> Dict:
+        """Update a channel."""
+        return self.client.patch(f"channels/{web_id}", data=channel)
+
+    def delete(self, web_id: str) -> Dict:
+        """Delete a channel."""
+        return self.client.delete(f"channels/{web_id}")

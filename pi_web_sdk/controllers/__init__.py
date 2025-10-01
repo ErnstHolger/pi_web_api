@@ -54,6 +54,33 @@ from .stream import (
 
 from .table import TableController
 
+from .omf import OmfController
+
+from .security import (
+    SecurityIdentityController,
+    SecurityMappingController,
+)
+
+from .notification import (
+    NotificationContactTemplateController,
+    NotificationPlugInController,
+    NotificationRuleController,
+    NotificationRuleSubscriberController,
+    NotificationRuleTemplateController,
+)
+
+from .time_rule import (
+    TimeRuleController,
+    TimeRulePlugInController,
+)
+
+from .unit import (
+    UnitController,
+    UnitClassController,
+)
+
+from .metrics import MetricsController
+
 __all__ = [
     'HomeController',
     'SystemController',
@@ -81,4 +108,17 @@ __all__ = [
     'StreamController',
     'StreamSetController',
     'TableController',
+    'OmfController',
+    'SecurityIdentityController',
+    'SecurityMappingController',
+    'NotificationContactTemplateController',
+    'NotificationPlugInController',
+    'NotificationRuleController',
+    'NotificationRuleSubscriberController',
+    'NotificationRuleTemplateController',
+    'TimeRuleController',
+    'TimeRulePlugInController',
+    'UnitController',
+    'UnitClassController',
+    'MetricsController',
 ]

@@ -29,11 +29,24 @@ from .controllers import (
     EnumerationValueController,
     EventFrameController,
     HomeController,
+    MetricsController,
+    NotificationContactTemplateController,
+    NotificationPlugInController,
+    NotificationRuleController,
+    NotificationRuleSubscriberController,
+    NotificationRuleTemplateController,
+    OmfController,
     PointController,
+    SecurityIdentityController,
+    SecurityMappingController,
     StreamController,
     StreamSetController,
     SystemController,
     TableController,
+    TimeRuleController,
+    TimeRulePlugInController,
+    UnitController,
+    UnitClassController,
 )
 from .exceptions import PIWebAPIError
 
@@ -74,6 +87,21 @@ class PIWebAPIClient:
         self.streamset = StreamSetController(self)
         self.system = SystemController(self)
         self.table = TableController(self)
+        
+        # New controllers
+        self.omf = OmfController(self)
+        self.security_identity = SecurityIdentityController(self)
+        self.security_mapping = SecurityMappingController(self)
+        self.notification_contact_template = NotificationContactTemplateController(self)
+        self.notification_plugin = NotificationPlugInController(self)
+        self.notification_rule = NotificationRuleController(self)
+        self.notification_rule_subscriber = NotificationRuleSubscriberController(self)
+        self.notification_rule_template = NotificationRuleTemplateController(self)
+        self.time_rule = TimeRuleController(self)
+        self.time_rule_plugin = TimeRulePlugInController(self)
+        self.unit = UnitController(self)
+        self.unit_class = UnitClassController(self)
+        self.metrics = MetricsController(self)
 
     def _setup_authentication(self):
         """Setup authentication for the session."""
@@ -105,6 +133,7 @@ class PIWebAPIClient:
         params: Optional[Dict] = None,
         data: Optional[Dict] = None,
         json_data: Optional[Dict] = None,
+        headers: Optional[Dict] = None,
     ) -> Dict:
         """Make HTTP request to PI Web API."""
         url = f"{self.config.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
@@ -115,6 +144,11 @@ class PIWebAPIClient:
         if "webIdType" not in params:
             params["webIdType"] = self.config.webid_type.value
 
+        # Prepare headers
+        request_headers = self.session.headers.copy()
+        if headers:
+            request_headers.update(headers)
+            
         try:
             response = self.session.request(
                 method=method,
@@ -122,6 +156,7 @@ class PIWebAPIClient:
                 params=params,
                 data=data,
                 json=json_data,
+                headers=request_headers,
                 verify=self.config.verify_ssl,
                 timeout=self.config.timeout,
             )
@@ -157,19 +192,19 @@ class PIWebAPIClient:
         return self._make_request("GET", endpoint, params=params)
 
     def post(
-        self, endpoint: str, data: Optional[Dict] = None, params: Optional[Dict] = None
+        self, 
+        endpoint: str, 
+        data: Optional[Dict] = None, 
+        params: Optional[Dict] = None,
+        headers: Optional[Dict] = None
     ) -> Dict:
         """Make POST request."""
         # Add X-Requested-With header for POST requests
-        original_headers = self.session.headers.copy()
-        self.session.headers.update({"X-Requested-With": "XMLHttpRequest"})
-        
-        try:
-            result = self._make_request("POST", endpoint, params=params, json_data=data)
-            return result
-        finally:
-            # Restore original headers
-            self.session.headers = original_headers
+        post_headers = {"X-Requested-With": "XMLHttpRequest"}
+        if headers:
+            post_headers.update(headers)
+            
+        return self._make_request("POST", endpoint, params=params, json_data=data, headers=post_headers)
 
     def put(
         self, endpoint: str, data: Optional[Dict] = None, params: Optional[Dict] = None

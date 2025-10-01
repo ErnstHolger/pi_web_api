@@ -19,7 +19,7 @@ def _bool_from_env(name: str, default: bool = False) -> bool:
 @pytest.fixture(scope="session")
 def pi_web_api_client():
     """Provide a configured PI Web API client backed by the live controller."""
-    base_url = os.getenv("PI_WEB_API_BASE_URL", "https://172.28.201.116/piwebapi")
+    base_url = os.getenv("PI_WEB_API_BASE_URL", "https://172.27.217.94/piwebapi")
     timeout = int(os.getenv("PI_WEB_API_TIMEOUT", "10"))
     verify_ssl = _bool_from_env("PI_WEB_API_VERIFY_SSL", default=False)
     auth_method_name = os.getenv("PI_WEB_API_AUTH_METHOD", "anonymous").strip().lower()

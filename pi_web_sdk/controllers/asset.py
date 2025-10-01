@@ -54,6 +54,25 @@ class AssetServerController(BaseController):
             params["selectedFields"] = selected_fields
         return self.client.get(f"assetservers/{web_id}/assetdatabases", params=params)
 
+    def get_enumeration_sets(
+        self,
+        web_id: str,
+        name_filter: Optional[str] = None,
+        selected_fields: Optional[str] = None,
+        start_index: int = 0,
+        max_count: int = 1000,
+    ) -> Dict:
+        """Get enumeration sets for an asset server."""
+        params = {
+            "startIndex": start_index,
+            "maxCount": max_count,
+        }
+        if name_filter:
+            params["nameFilter"] = name_filter
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"assetservers/{web_id}/enumerationsets", params=params)
+
 
 class AssetDatabaseController(BaseController):
     """Controller for Asset Database operations."""
@@ -132,6 +151,63 @@ class AssetDatabaseController(BaseController):
         """Create an element in the asset database."""
         return self.client.post(f"assetdatabases/{web_id}/elements", data=element)
 
+    def get_analyses(
+        self,
+        web_id: str,
+        name_filter: Optional[str] = None,
+        selected_fields: Optional[str] = None,
+        start_index: int = 0,
+        max_count: int = 1000,
+    ) -> Dict:
+        """Get analyses for an asset database."""
+        params = {
+            "startIndex": start_index,
+            "maxCount": max_count,
+        }
+        if name_filter:
+            params["nameFilter"] = name_filter
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"assetdatabases/{web_id}/analyses", params=params)
+
+    def get_event_frames(
+        self,
+        web_id: str,
+        name_filter: Optional[str] = None,
+        selected_fields: Optional[str] = None,
+        start_index: int = 0,
+        max_count: int = 1000,
+    ) -> Dict:
+        """Get event frames for an asset database."""
+        params = {
+            "startIndex": start_index,
+            "maxCount": max_count,
+        }
+        if name_filter:
+            params["nameFilter"] = name_filter
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"assetdatabases/{web_id}/eventframes", params=params)
+
+    def get_tables(
+        self,
+        web_id: str,
+        name_filter: Optional[str] = None,
+        selected_fields: Optional[str] = None,
+        start_index: int = 0,
+        max_count: int = 1000,
+    ) -> Dict:
+        """Get tables for an asset database."""
+        params = {
+            "startIndex": start_index,
+            "maxCount": max_count,
+        }
+        if name_filter:
+            params["nameFilter"] = name_filter
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"assetdatabases/{web_id}/tables", params=params)
+
 
 class ElementController(BaseController):
     """Controller for Element operations."""
@@ -149,7 +225,7 @@ class ElementController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"elements?path={path}".replace(" ", "%20"), params=params
+            f"elements/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, element: Dict) -> Dict:
@@ -246,10 +322,73 @@ class ElementController(BaseController):
 class ElementCategoryController(BaseController):
     """Controller for Element Category operations."""
 
-    pass
+    def get(self, web_id: str, selected_fields: Optional[str] = None) -> Dict:
+        """Get element category by WebID."""
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"elementcategories/{web_id}", params=params)
+
+    def get_by_path(self, path: str, selected_fields: Optional[str] = None) -> Dict:
+        """Get element category by path."""
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(
+            f"elementcategories/path/{self._encode_path(path)}", params=params
+        )
+
+    def update(self, web_id: str, category: Dict) -> Dict:
+        """Update an element category."""
+        return self.client.patch(f"elementcategories/{web_id}", data=category)
+
+    def delete(self, web_id: str) -> Dict:
+        """Delete an element category."""
+        return self.client.delete(f"elementcategories/{web_id}")
 
 
 class ElementTemplateController(BaseController):
     """Controller for Element Template operations."""
 
-    pass
+    def get(self, web_id: str, selected_fields: Optional[str] = None) -> Dict:
+        """Get element template by WebID."""
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"elementtemplates/{web_id}", params=params)
+
+    def get_by_path(self, path: str, selected_fields: Optional[str] = None) -> Dict:
+        """Get element template by path."""
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(
+            f"elementtemplates/path/{self._encode_path(path)}", params=params
+        )
+
+    def update(self, web_id: str, template: Dict) -> Dict:
+        """Update an element template."""
+        return self.client.patch(f"elementtemplates/{web_id}", data=template)
+
+    def delete(self, web_id: str) -> Dict:
+        """Delete an element template."""
+        return self.client.delete(f"elementtemplates/{web_id}")
+
+    def get_attribute_templates(
+        self,
+        web_id: str,
+        selected_fields: Optional[str] = None,
+    ) -> Dict:
+        """Get attribute templates for an element template."""
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(
+            f"elementtemplates/{web_id}/attributetemplates", params=params
+        )
+
+    def create_attribute_template(self, web_id: str, template: Dict) -> Dict:
+        """Create an attribute template."""
+        return self.client.post(
+            f"elementtemplates/{web_id}/attributetemplates", data=template
+        )
