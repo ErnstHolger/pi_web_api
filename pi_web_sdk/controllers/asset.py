@@ -318,6 +318,293 @@ class ElementController(BaseController):
         """Create a child element."""
         return self.client.post(f"elements/{web_id}/elements", data=element)
 
+    def get_analyses(
+        self,
+        web_id: str,
+        name_filter: Optional[str] = None,
+        selected_fields: Optional[str] = None,
+        start_index: int = 0,
+        max_count: int = 1000,
+    ) -> Dict:
+        """Get analyses for an element."""
+        params = {
+            "startIndex": start_index,
+            "maxCount": max_count,
+        }
+        if name_filter:
+            params["nameFilter"] = name_filter
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"elements/{web_id}/analyses", params=params)
+
+    def create_analysis(self, web_id: str, analysis: Dict) -> Dict:
+        """Create an analysis on the element."""
+        return self.client.post(f"elements/{web_id}/analyses", data=analysis)
+
+    def get_categories(
+        self,
+        web_id: str,
+        selected_fields: Optional[str] = None,
+    ) -> Dict:
+        """Get categories for an element."""
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"elements/{web_id}/categories", params=params)
+
+    def create_config(self, web_id: str, include_child_elements: bool = False) -> Dict:
+        """Create or update an element's configuration."""
+        params = {}
+        if include_child_elements:
+            params["includeChildElements"] = include_child_elements
+        return self.client.post(f"elements/{web_id}/config", params=params)
+
+    def delete_config(self, web_id: str, include_child_elements: bool = False) -> Dict:
+        """Delete an element's configuration."""
+        params = {}
+        if include_child_elements:
+            params["includeChildElements"] = include_child_elements
+        return self.client.delete(f"elements/{web_id}/config", params=params)
+
+    def find_element_attributes(
+        self,
+        web_id: str,
+        attribute_category: Optional[str] = None,
+        attribute_description_filter: Optional[str] = None,
+        attribute_name_filter: Optional[str] = None,
+        attribute_type: Optional[str] = None,
+        element_category: Optional[str] = None,
+        element_description_filter: Optional[str] = None,
+        element_name_filter: Optional[str] = None,
+        element_template: Optional[str] = None,
+        element_type: Optional[str] = None,
+        max_count: int = 1000,
+        search_full_hierarchy: bool = False,
+        selected_fields: Optional[str] = None,
+        sort_field: Optional[str] = None,
+        sort_order: Optional[str] = None,
+        start_index: int = 0,
+    ) -> Dict:
+        """Search for element attributes by various criteria."""
+        params = {
+            "startIndex": start_index,
+            "maxCount": max_count,
+            "searchFullHierarchy": search_full_hierarchy,
+        }
+        if attribute_category:
+            params["attributeCategory"] = attribute_category
+        if attribute_description_filter:
+            params["attributeDescriptionFilter"] = attribute_description_filter
+        if attribute_name_filter:
+            params["attributeNameFilter"] = attribute_name_filter
+        if attribute_type:
+            params["attributeType"] = attribute_type
+        if element_category:
+            params["elementCategory"] = element_category
+        if element_description_filter:
+            params["elementDescriptionFilter"] = element_description_filter
+        if element_name_filter:
+            params["elementNameFilter"] = element_name_filter
+        if element_template:
+            params["elementTemplate"] = element_template
+        if element_type:
+            params["elementType"] = element_type
+        if sort_field:
+            params["sortField"] = sort_field
+        if sort_order:
+            params["sortOrder"] = sort_order
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"elements/{web_id}/elementattributes", params=params)
+
+    def get_event_frames(
+        self,
+        web_id: str,
+        can_be_acknowledged: Optional[bool] = None,
+        category_name: Optional[str] = None,
+        end_time: Optional[str] = None,
+        is_acknowledged: Optional[bool] = None,
+        name_filter: Optional[str] = None,
+        referenced_element_name_filter: Optional[str] = None,
+        search_full_hierarchy: bool = False,
+        search_mode: Optional[str] = None,
+        selected_fields: Optional[str] = None,
+        severity: Optional[str] = None,
+        sort_field: Optional[str] = None,
+        sort_order: Optional[str] = None,
+        start_index: int = 0,
+        start_time: Optional[str] = None,
+        max_count: int = 1000,
+        template_name: Optional[str] = None,
+    ) -> Dict:
+        """Get event frames for an element."""
+        params = {
+            "startIndex": start_index,
+            "maxCount": max_count,
+            "searchFullHierarchy": search_full_hierarchy,
+        }
+        if can_be_acknowledged is not None:
+            params["canBeAcknowledged"] = can_be_acknowledged
+        if category_name:
+            params["categoryName"] = category_name
+        if end_time:
+            params["endTime"] = end_time
+        if is_acknowledged is not None:
+            params["isAcknowledged"] = is_acknowledged
+        if name_filter:
+            params["nameFilter"] = name_filter
+        if referenced_element_name_filter:
+            params["referencedElementNameFilter"] = referenced_element_name_filter
+        if search_mode:
+            params["searchMode"] = search_mode
+        if severity:
+            params["severity"] = severity
+        if sort_field:
+            params["sortField"] = sort_field
+        if sort_order:
+            params["sortOrder"] = sort_order
+        if start_time:
+            params["startTime"] = start_time
+        if template_name:
+            params["templateName"] = template_name
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"elements/{web_id}/eventframes", params=params)
+
+    def get_notification_rule_subscribers(
+        self,
+        web_id: str,
+        selected_fields: Optional[str] = None,
+    ) -> Dict:
+        """Get notification rule subscribers for an element."""
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(
+            f"elements/{web_id}/notificationrulesubscribers", params=params
+        )
+
+    def get_paths(self, web_id: str, relative_path: Optional[str] = None) -> Dict:
+        """Get the element's paths."""
+        params = {}
+        if relative_path:
+            params["relativePath"] = relative_path
+        return self.client.get(f"elements/{web_id}/paths", params=params)
+
+    def get_referenced_elements(
+        self,
+        web_id: str,
+        category_name: Optional[str] = None,
+        description_filter: Optional[str] = None,
+        element_type: Optional[str] = None,
+        max_count: int = 1000,
+        name_filter: Optional[str] = None,
+        selected_fields: Optional[str] = None,
+        sort_field: Optional[str] = None,
+        sort_order: Optional[str] = None,
+        start_index: int = 0,
+        template_name: Optional[str] = None,
+    ) -> Dict:
+        """Get elements referenced by this element's attributes."""
+        params = {
+            "startIndex": start_index,
+            "maxCount": max_count,
+        }
+        if category_name:
+            params["categoryName"] = category_name
+        if description_filter:
+            params["descriptionFilter"] = description_filter
+        if element_type:
+            params["elementType"] = element_type
+        if name_filter:
+            params["nameFilter"] = name_filter
+        if sort_field:
+            params["sortField"] = sort_field
+        if sort_order:
+            params["sortOrder"] = sort_order
+        if template_name:
+            params["templateName"] = template_name
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"elements/{web_id}/referencedelements", params=params)
+
+    def get_security(
+        self,
+        web_id: str,
+        user_identity: Optional[str] = None,
+        force_refresh: bool = False,
+        selected_fields: Optional[str] = None,
+    ) -> Dict:
+        """Get security information for an element."""
+        params = {}
+        if user_identity:
+            params["userIdentity"] = user_identity
+        if force_refresh:
+            params["forceRefresh"] = force_refresh
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"elements/{web_id}/security", params=params)
+
+    def get_security_entries(
+        self,
+        web_id: str,
+        name_filter: Optional[str] = None,
+        selected_fields: Optional[str] = None,
+    ) -> Dict:
+        """Get security entries for an element."""
+        params = {}
+        if name_filter:
+            params["nameFilter"] = name_filter
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(f"elements/{web_id}/securityentries", params=params)
+
+    def get_security_entry_by_name(
+        self,
+        web_id: str,
+        name: str,
+        selected_fields: Optional[str] = None,
+    ) -> Dict:
+        """Get security entry by name for an element."""
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.get(
+            f"elements/{web_id}/securityentries/{self._encode_path(name)}",
+            params=params
+        )
+
+    def create_security_entry(self, web_id: str, security_entry: Dict, apply_to_children: bool = False) -> Dict:
+        """Create a security entry for the element."""
+        params = {}
+        if apply_to_children:
+            params["applyToChildren"] = apply_to_children
+        return self.client.post(
+            f"elements/{web_id}/securityentries", data=security_entry, params=params
+        )
+
+    def update_security_entry(
+        self, web_id: str, name: str, security_entry: Dict, apply_to_children: bool = False
+    ) -> Dict:
+        """Update a security entry for the element."""
+        params = {}
+        if apply_to_children:
+            params["applyToChildren"] = apply_to_children
+        return self.client.put(
+            f"elements/{web_id}/securityentries/{self._encode_path(name)}",
+            data=security_entry,
+            params=params
+        )
+
+    def delete_security_entry(self, web_id: str, name: str, apply_to_children: bool = False) -> Dict:
+        """Delete a security entry from the element."""
+        params = {}
+        if apply_to_children:
+            params["applyToChildren"] = apply_to_children
+        return self.client.delete(
+            f"elements/{web_id}/securityentries/{self._encode_path(name)}", params=params
+        )
+
 
 class ElementCategoryController(BaseController):
     """Controller for Element Category operations."""

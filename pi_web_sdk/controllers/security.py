@@ -28,7 +28,7 @@ class SecurityIdentityController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"securityidentities?path={self._encode_path(path)}", params=params
+            f"securityidentities/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, security_identity: Dict) -> Dict:
@@ -113,7 +113,7 @@ class SecurityMappingController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"securitymappings?path={self._encode_path(path)}", params=params
+            f"securitymappings/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, security_mapping: Dict) -> Dict:

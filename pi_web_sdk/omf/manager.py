@@ -298,6 +298,85 @@ class OMFManager:
             
         return self.send_sensor_data(sensor_id, [data])
     
+    def create_af_hierarchy(
+        self,
+        hierarchy: OMFHierarchy,
+        database_web_id: str
+    ) -> Dict[str, Any]:
+        """
+        Create a proper AF element hierarchy with parent-child relationships.
+
+        This creates traditional AF elements (not OMF assets) with proper nesting.
+
+        Args:
+            hierarchy: OMF hierarchy structure to create
+            database_web_id: WebId of the AF database to create elements in
+
+        Returns:
+            Dict containing created element WebIds and structure info
+        """
+        results = {
+            "elements_created": [],
+            "total_count": 0,
+            "node_map": {}  # Maps node path to WebId
+        }
+
+        # Track WebIds for parent-child relationships
+        node_webids = {}
+
+        # Process nodes level by level (breadth-first)
+        for node in hierarchy.get_all_nodes():
+            node_path = node.get_full_path(hierarchy.separator)
+
+            # Prepare element data
+            element_data = {
+                "Name": node.name,
+                "Description": node.properties.get("description", f"{node.name} element")
+            }
+            # Add any additional properties as custom attributes (if needed)
+
+            try:
+                if node.parent is None:
+                    # Root node - create in database
+                    elem = self.client.asset_database.create_element(
+                        database_web_id,
+                        element_data
+                    )
+                else:
+                    # Child node - create under parent
+                    parent_path = node.parent.get_full_path(hierarchy.separator)
+                    parent_web_id = node_webids.get(parent_path)
+
+                    if not parent_web_id:
+                        raise ValueError(f"Parent WebId not found for {parent_path}")
+
+                    elem = self.client.element.create_element(
+                        parent_web_id,
+                        element_data
+                    )
+
+                # Store WebId for this node
+                node_webids[node_path] = elem["WebId"]
+
+                results["elements_created"].append({
+                    "name": node.name,
+                    "path": node_path,
+                    "web_id": elem["WebId"],
+                    "is_leaf": node.is_leaf
+                })
+                results["total_count"] += 1
+
+            except Exception as e:
+                results["elements_created"].append({
+                    "name": node.name,
+                    "path": node_path,
+                    "error": str(e),
+                    "status": "failed"
+                })
+
+        results["node_map"] = node_webids
+        return results
+
     def create_hierarchy(
         self,
         hierarchy: OMFHierarchy,
@@ -374,24 +453,27 @@ class OMFManager:
         leaf_type_id: str,
         separator: str = "/",
         path_properties: Optional[Dict[str, Dict[str, Any]]] = None,
-        create_types: bool = True
+        create_types: bool = True,
+        use_af_elements: bool = True
     ) -> Dict[str, Any]:
         """
         Create a complete hierarchy from a list of paths.
-        
+
         Args:
             paths: List of paths like ["plant1/unit1/sensor1", "plant1/unit2/sensor2"]
             root_type_id: Type ID for intermediate nodes
             leaf_type_id: Type ID for leaf nodes
             separator: Path separator (default: "/")
             path_properties: Optional dict mapping paths to properties
-            create_types: Whether to create the types first
-            
+            create_types: Whether to create the types first (only for OMF method)
+            use_af_elements: If True, creates proper AF elements with parent-child relationships.
+                            If False, creates OMF assets (flat structure)
+
         Returns:
             Dict containing operation results
         """
         from .models import create_hierarchy_from_paths
-        
+
         # Create hierarchy structure
         hierarchy = create_hierarchy_from_paths(
             paths=paths,
@@ -400,9 +482,24 @@ class OMFManager:
             separator=separator,
             path_properties=path_properties
         )
-        
-        # Create the hierarchy in OMF
-        return self.create_hierarchy(hierarchy, create_types)
+
+        if use_af_elements:
+            # Create proper AF element hierarchy
+            # Get database from asset server
+            asset_servers = self.client.asset_server.list()
+            if not asset_servers.get("Items"):
+                raise ValueError("No asset servers found")
+
+            asset_server = asset_servers["Items"][0]
+            dbs = self.client.asset_server.get_databases(asset_server["WebId"])
+            if not dbs.get("Items"):
+                raise ValueError("No databases found")
+
+            database_web_id = dbs["Items"][0]["WebId"]
+            return self.create_af_hierarchy(hierarchy, database_web_id)
+        else:
+            # Create using OMF (flat assets)
+            return self.create_hierarchy(hierarchy, create_types)
     
     def create_industrial_hierarchy(
         self,
@@ -412,11 +509,12 @@ class OMFManager:
         plant_type_id: str = "PlantType",
         unit_type_id: str = "UnitType",
         sensor_type_id: str = "SensorType",
-        create_types: bool = True
+        create_types: bool = True,
+        use_af_elements: bool = True
     ) -> Dict[str, Any]:
         """
         Create a typical industrial hierarchy: Plant -> Unit -> Sensor.
-        
+
         Args:
             plants: List of plant names
             units_per_plant: Dict mapping plant names to unit lists
@@ -424,13 +522,15 @@ class OMFManager:
             plant_type_id: Type ID for plant nodes
             unit_type_id: Type ID for unit nodes
             sensor_type_id: Type ID for sensor nodes
-            create_types: Whether to create the types first
-            
+            create_types: Whether to create the types first (only for OMF method)
+            use_af_elements: If True, creates proper AF elements with parent-child relationships.
+                            If False, creates OMF assets (flat structure)
+
         Returns:
             Dict containing operation results
         """
         from .models import create_industrial_hierarchy
-        
+
         # Create hierarchy structure
         hierarchy = create_industrial_hierarchy(
             plants=plants,
@@ -440,9 +540,23 @@ class OMFManager:
             unit_type_id=unit_type_id,
             sensor_type_id=sensor_type_id
         )
-        
-        # Create the hierarchy in OMF
-        return self.create_hierarchy(hierarchy, create_types)
+
+        if use_af_elements:
+            # Create proper AF element hierarchy
+            asset_servers = self.client.asset_server.list()
+            if not asset_servers.get("Items"):
+                raise ValueError("No asset servers found")
+
+            asset_server = asset_servers["Items"][0]
+            dbs = self.client.asset_server.get_databases(asset_server["WebId"])
+            if not dbs.get("Items"):
+                raise ValueError("No databases found")
+
+            database_web_id = dbs["Items"][0]["WebId"]
+            return self.create_af_hierarchy(hierarchy, database_web_id)
+        else:
+            # Create using OMF (flat assets)
+            return self.create_hierarchy(hierarchy, create_types)
     
     def add_path_to_existing_hierarchy(
         self,

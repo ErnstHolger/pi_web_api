@@ -22,6 +22,8 @@ from .attribute import (
     AttributeTemplateController,
 )
 
+from .attribute_trait import AttributeTraitController
+
 from .data import (
     DataServerController,
     PointController,
@@ -52,7 +54,7 @@ from .stream import (
     StreamSetController,
 )
 
-from .table import TableController
+from .table import TableController, TableCategoryController
 
 from .omf import OmfController
 
@@ -93,6 +95,7 @@ __all__ = [
     'AttributeController',
     'AttributeCategoryController',
     'AttributeTemplateController',
+    'AttributeTraitController',
     'DataServerController',
     'PointController',
     'AnalysisController',
@@ -108,6 +111,7 @@ __all__ = [
     'StreamController',
     'StreamSetController',
     'TableController',
+    'TableCategoryController',
     'OmfController',
     'SecurityIdentityController',
     'SecurityMappingController',

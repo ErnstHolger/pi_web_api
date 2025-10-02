@@ -85,7 +85,7 @@ class CalculationController(BaseController):
 
     def get_by_path(self, path: str) -> Dict:
         """Get calculation by path."""
-        return self.client.get(f"calculations?path={self._encode_path(path)}")
+        return self.client.get(f"calculations/path/{self._encode_path(path)}")
 
     def update(self, web_id: str, calculation: Dict) -> Dict:
         """Update a calculation."""
@@ -105,7 +105,7 @@ class ChannelController(BaseController):
 
     def get_by_path(self, path: str) -> Dict:
         """Get channel by path."""
-        return self.client.get(f"channels?path={self._encode_path(path)}")
+        return self.client.get(f"channels/path/{self._encode_path(path)}")
 
     def update(self, web_id: str, channel: Dict) -> Dict:
         """Update a channel."""

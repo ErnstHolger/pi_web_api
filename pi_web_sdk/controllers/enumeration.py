@@ -27,7 +27,7 @@ class EnumerationSetController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"enumerationsets?path={self._encode_path(path)}", params=params
+            f"enumerationsets/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, enumeration_set: Dict) -> Dict:
@@ -73,7 +73,7 @@ class EnumerationValueController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"enumerationvalues?path={self._encode_path(path)}", params=params
+            f"enumerationvalues/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, enumeration_value: Dict) -> Dict:

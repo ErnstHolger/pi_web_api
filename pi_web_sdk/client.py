@@ -17,6 +17,7 @@ from .controllers import (
     AttributeController,
     AttributeCategoryController,
     AttributeTemplateController,
+    AttributeTraitController,
     BatchController,
     CalculationController,
     ChannelController,
@@ -43,6 +44,7 @@ from .controllers import (
     StreamSetController,
     SystemController,
     TableController,
+    TableCategoryController,
     TimeRuleController,
     TimeRulePlugInController,
     UnitController,
@@ -70,6 +72,7 @@ class PIWebAPIClient:
         self.attribute = AttributeController(self)
         self.attribute_category = AttributeCategoryController(self)
         self.attribute_template = AttributeTemplateController(self)
+        self.attribute_trait = AttributeTraitController(self)
         self.batch = BatchController(self)
         self.calculation = CalculationController(self)
         self.channel = ChannelController(self)
@@ -87,7 +90,8 @@ class PIWebAPIClient:
         self.streamset = StreamSetController(self)
         self.system = SystemController(self)
         self.table = TableController(self)
-        
+        self.table_category = TableCategoryController(self)
+
         # New controllers
         self.omf = OmfController(self)
         self.security_identity = SecurityIdentityController(self)
@@ -182,7 +186,22 @@ class PIWebAPIClient:
             try:
                 return response.json()
             except ValueError:
-                return {"content": response.text}
+                # For POST/PATCH/DELETE, check Location header for WebId
+                result = {"content": response.text}
+                if "Location" in response.headers:
+                    result["Location"] = response.headers["Location"]
+                    # Extract WebId from Location header
+                    location = response.headers["Location"]
+                    # WebId can be in query param (webid=...) or path (/resource/WEBID)
+                    if "webid=" in location.lower():
+                        web_id = location.split("webid=")[-1].split("&")[0]
+                        result["WebId"] = web_id
+                    else:
+                        # Extract from URL path (last segment after last /)
+                        path_parts = location.rstrip("/").split("/")
+                        if path_parts:
+                            result["WebId"] = path_parts[-1]
+                return result
 
         except requests.RequestException as e:
             raise PIWebAPIError(f"Request failed: {str(e)}")

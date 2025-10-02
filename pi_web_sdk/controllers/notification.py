@@ -31,7 +31,7 @@ class NotificationContactTemplateController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"notificationcontacttemplates?path={self._encode_path(path)}", params=params
+            f"notificationcontacttemplates/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, template: Dict) -> Dict:
@@ -154,7 +154,7 @@ class NotificationPlugInController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"notificationplugins?path={self._encode_path(path)}", params=params
+            f"notificationplugins/path/{self._encode_path(path)}", params=params
         )
 
 
@@ -174,7 +174,7 @@ class NotificationRuleController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"notificationrules?path={self._encode_path(path)}", params=params
+            f"notificationrules/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, rule: Dict) -> Dict:
@@ -300,7 +300,7 @@ class NotificationRuleSubscriberController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"notificationrulesubscribers?path={self._encode_path(path)}", params=params
+            f"notificationrulesubscribers/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, subscriber: Dict) -> Dict:
@@ -341,7 +341,7 @@ class NotificationRuleTemplateController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"notificationruletemplates?path={self._encode_path(path)}", params=params
+            f"notificationruletemplates/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, template: Dict) -> Dict:

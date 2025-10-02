@@ -28,7 +28,7 @@ class UnitController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"units?path={self._encode_path(path)}", params=params
+            f"units/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, unit: Dict) -> Dict:
@@ -56,5 +56,5 @@ class UnitClassController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"unitclasses?path={self._encode_path(path)}", params=params
+            f"unitclasses/path/{self._encode_path(path)}", params=params
         )

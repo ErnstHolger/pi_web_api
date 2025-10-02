@@ -28,7 +28,7 @@ class TimeRuleController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"timerules?path={self._encode_path(path)}", params=params
+            f"timerules/path/{self._encode_path(path)}", params=params
         )
 
     def update(self, web_id: str, time_rule: Dict) -> Dict:
@@ -56,5 +56,5 @@ class TimeRulePlugInController(BaseController):
         if selected_fields:
             params["selectedFields"] = selected_fields
         return self.client.get(
-            f"timeruleplugins?path={self._encode_path(path)}", params=params
+            f"timeruleplugins/path/{self._encode_path(path)}", params=params
         )

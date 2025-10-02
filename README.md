@@ -9,6 +9,7 @@ pi_web_sdk delivers a consistently structured Python interface for AVEVA PI Web 
 - **Typed configuration** via `PIWebAPIConfig` and enums for authentication and WebID formats
 - **Reusable HTTP client** `PIWebAPIClient` wrapper around `requests.Session` with centralised error handling
 - **Domain-organized controllers** split by functionality (system, assets, data, streams, OMF, etc.) for easier navigation
+- **Stream Updates** for incremental data retrieval without websockets (marker-based polling)
 - **OMF support** with ORM-style API for creating types, containers, assets, and hierarchies
 - **Comprehensive CRUD operations** for all major PI Web API endpoints
 - **Backwards-compatible** `aveva_web_api.py` re-export for existing imports
@@ -75,6 +76,40 @@ client.stream.update_value(
 )
 ```
 
+### Stream Updates (Incremental Data Retrieval)
+```python
+import time
+
+# Register for stream updates
+registration = client.stream.register_update(stream_web_id)
+marker = registration["LatestMarker"]
+
+# Poll for incremental updates
+while True:
+    time.sleep(5)  # Wait between polls
+
+    # Retrieve only new data since last marker
+    updates = client.stream.retrieve_update(marker)
+
+    for item in updates.get("Items", []):
+        print(f"{item['Timestamp']}: {item['Value']}")
+
+    # Update marker for next poll
+    marker = updates["LatestMarker"]
+
+# For multiple streams, use streamset
+registration = client.streamset.register_updates([stream_id1, stream_id2, stream_id3])
+marker = registration["LatestMarker"]
+
+updates = client.streamset.retrieve_updates(marker)
+for stream_update in updates.get("Items", []):
+    stream_id = stream_update["WebId"]
+    for item in stream_update.get("Items", []):
+        print(f"Stream {stream_id}: {item['Timestamp']} = {item['Value']}")
+```
+
+See [examples/README_STREAM_UPDATES.md](examples/README_STREAM_UPDATES.md) for comprehensive Stream Updates documentation.
+
 ### OMF (OSIsoft Message Format) Support
 ```python
 from pi_web_sdk.omf import OMFManager, create_temperature_sensor_type, create_single_asset
@@ -134,8 +169,8 @@ All controller instances are available as attributes on `PIWebAPIClient`:
 ### Data & Streams
 - `client.data_server` - Data servers
 - `client.point` - PI Points
-- `client.stream` - Stream data operations
-- `client.stream_set` - Batch stream operations
+- `client.stream` - Stream data operations (including Stream Updates)
+- `client.streamset` - Batch stream operations (including Stream Set Updates)
 
 ### Analysis & Events
 - `client.analysis` - PI Analyses
@@ -202,7 +237,36 @@ pytest -m integration
 ## Documentation & Examples
 - [PI Web API Reference](https://docs.aveva.com/bundle/pi-web-api-reference/page/help/getting-started.html)
 - [OMF Documentation](https://docs.aveva.com/)
+- [Stream Updates Guide](examples/README_STREAM_UPDATES.md) - Comprehensive guide for incremental data retrieval
+- [Stream Updates Examples](examples/stream_updates_example.py) - Working code examples
 - See `examples/` directory for more usage examples
+
+## Recent Additions
+
+### Stream Updates (v2025.01)
+Stream Updates provides an efficient way to retrieve incremental data updates without websockets. Key features:
+- **Marker-based tracking** - Maintains position in data stream
+- **Single or multiple streams** - Support for individual streams and stream sets
+- **Metadata change detection** - Notifies when data is invalidated
+- **Unit conversion** - Convert values during retrieval
+- **Selected fields** - Filter response data
+
+```python
+# Register once
+registration = client.stream.register_update(stream_web_id)
+marker = registration["LatestMarker"]
+
+# Poll repeatedly for new data only
+while True:
+    time.sleep(5)
+    updates = client.stream.retrieve_update(marker)
+    # Process updates["Items"]
+    marker = updates["LatestMarker"]
+```
+
+**Requirements**: PI Web API 2019+ with Stream Updates feature enabled
+
+See [examples/README_STREAM_UPDATES.md](examples/README_STREAM_UPDATES.md) for complete documentation.
 
 ## License
 See LICENSE file for details.

@@ -195,6 +195,54 @@ class StreamController(BaseController):
             params["updateOption"] = update_option
         return self.client.put(f"streams/{web_id}/recorded", data=values, params=params)
 
+    def register_update(
+        self,
+        web_id: str,
+        selected_fields: Optional[str] = None,
+    ) -> Dict:
+        """Register for stream updates.
+
+        Registers a stream for incremental updates. Returns a marker that can be used
+        to retrieve updates via retrieve_update().
+
+        Args:
+            web_id: WebID of the stream
+            selected_fields: Optional comma-separated list of fields to include
+
+        Returns:
+            Dictionary with LatestMarker and registration status
+        """
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.post(f"streams/{web_id}/updates", params=params)
+
+    def retrieve_update(
+        self,
+        marker: str,
+        selected_fields: Optional[str] = None,
+        desired_units: Optional[str] = None,
+    ) -> Dict:
+        """Retrieve stream updates using a marker.
+
+        Gets incremental updates since the last marker position. Response includes
+        a new LatestMarker for subsequent queries.
+
+        Args:
+            marker: Marker from previous register_update or retrieve_update call
+            selected_fields: Optional comma-separated list of fields to include
+            desired_units: Optional unit of measure for returned values
+
+        Returns:
+            Dictionary with Items (updates) and LatestMarker
+        """
+        params = {}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        if desired_units:
+            params["desiredUnits"] = desired_units
+        return self.client.get(f"streams/updates/{marker}", params=params)
+
 
 class StreamSetController(BaseController):
     """Controller for Stream Set operations."""
@@ -357,3 +405,51 @@ class StreamSetController(BaseController):
             updates: List of dicts with 'WebId' and 'Value' keys
         """
         return self.client.put("streamsets/value", data=updates)
+
+    def register_updates(
+        self,
+        web_ids: List[str],
+        selected_fields: Optional[str] = None,
+    ) -> Dict:
+        """Register multiple streams for updates.
+
+        Registers multiple streams for incremental updates. Returns markers that can be used
+        to retrieve updates via retrieve_updates().
+
+        Args:
+            web_ids: List of stream WebIDs to register
+            selected_fields: Optional comma-separated list of fields to include
+
+        Returns:
+            Dictionary with Items containing registration status for each stream and LatestMarker
+        """
+        params = {"webId": web_ids}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        return self.client.post("streamsets/updates", params=params)
+
+    def retrieve_updates(
+        self,
+        marker: str,
+        selected_fields: Optional[str] = None,
+        desired_units: Optional[str] = None,
+    ) -> Dict:
+        """Retrieve updates for multiple streams using a marker.
+
+        Gets incremental updates for all registered streams since the last marker position.
+        Response includes a new LatestMarker for subsequent queries.
+
+        Args:
+            marker: Marker from previous register_updates or retrieve_updates call
+            selected_fields: Optional comma-separated list of fields to include
+            desired_units: Optional unit of measure for returned values
+
+        Returns:
+            Dictionary with Items (updates per stream) and LatestMarker
+        """
+        params = {"marker": marker}
+        if selected_fields:
+            params["selectedFields"] = selected_fields
+        if desired_units:
+            params["desiredUnits"] = desired_units
+        return self.client.get("streamsets/updates", params=params)
