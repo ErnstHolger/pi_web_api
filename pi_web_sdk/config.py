@@ -6,7 +6,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
-__all__ = ['AuthMethod', 'WebIDType', 'PIWebAPIConfig']
+__all__ = ["AuthMethod", "WebIDType", "PIWebAPIConfig"]
+
 
 class AuthMethod(Enum):
     """Authentication methods supported by PI Web API."""
@@ -32,7 +33,7 @@ class PIWebAPIConfig:
     """Configuration for PI Web API client."""
 
     base_url: str
-    auth_method: AuthMethod = AuthMethod.BASIC
+    auth_method: AuthMethod = AuthMethod.ANONYMOUS
     username: Optional[str] = None
     password: Optional[str] = None
     token: Optional[str] = None

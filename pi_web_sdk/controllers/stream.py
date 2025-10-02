@@ -193,7 +193,7 @@ class StreamController(BaseController):
             params["bufferOption"] = buffer_option
         if update_option:
             params["updateOption"] = update_option
-        return self.client.put(f"streams/{web_id}/recorded", data=values, params=params)
+        return self.client.post(f"streams/{web_id}/recorded", data=values, params=params)
 
     def register_update(
         self,

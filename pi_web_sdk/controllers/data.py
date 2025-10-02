@@ -69,6 +69,18 @@ class DataServerController(BaseController):
                 return item
         return None
 
+    def create_point(self, web_id: str, point: Dict) -> Dict:
+        """Create a new PI Point on the data server.
+
+        Args:
+            web_id: WebID of the data server
+            point: Dictionary with point definition (Name, PointType, etc.)
+
+        Returns:
+            Dictionary with the created point information
+        """
+        return self.client.post(f"dataservers/{web_id}/points", data=point)
+
 
 class PointController(BaseController):
     """Controller for Point operations."""
